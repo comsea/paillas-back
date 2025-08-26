@@ -8,8 +8,16 @@ import homeRouter from "./routes/home.router";
 const app = express();
 const port = process.env.PORT || 8080;
 
-app.use(cors());
-app.use(express.json());
+const corsOptions = {
+  origin: ["https://www.paillas-poeles.com", "https://cors-test.codehappy.dev"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
+
 
 app.use("/", homeRouter);
 
