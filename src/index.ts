@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+var cors = require('cors')
 import path from "path";
 import articleRouter from "./routes/article.router";
 import authRouter from "./routes/auth.routes";
@@ -8,7 +9,15 @@ import homeRouter from "./routes/home.router";
 const app = express();
 const port = process.env.PORT || 8080;
 
-app.use(cors());
+app.use(cors())
+
+app.get('/products/:id', function (req, res, next) {
+  res.json({ msg: 'This is CORS-enabled for all origins!' })
+})
+
+app.listen(80, function () {
+  console.log('CORS-enabled web server listening on port 80')
+})
 
 app.use("/", homeRouter);
 
