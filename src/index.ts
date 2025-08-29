@@ -1,35 +1,40 @@
 import express from "express";
 import cors from "cors";
-var cors = require('cors')
 import path from "path";
+import dotenv from "dotenv";
 import articleRouter from "./routes/article.router";
 import authRouter from "./routes/auth.routes";
 import homeRouter from "./routes/home.router";
 
+dotenv.config();
+
 const app = express();
 const port = process.env.PORT || 8080;
 
-app.use(cors())
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
 
-app.get('/products/:id', function (req, res, next) {
-  res.json({ msg: 'This is CORS-enabled for all origins!' })
-})
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
 
-app.listen(80, function () {
-  console.log('CORS-enabled web server listening on port 80')
-})
-
-app.use("/", homeRouter);
-
-// servir /public (tes pages) et /uploads (les images)
+// Serve static files
 app.use(express.static(path.join(__dirname, "../public")));
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
+// Routes
+app.use("/", homeRouter);
 app.use("/articles", articleRouter);
 app.use("/auth", authRouter);
-
 app.get("/ping", (_req, res) => res.status(200).json({ message: "pong" }));
 
+// Start server
 app.listen(port, () => {
   console.log(`Server up and running on http://127.0.0.1:${port}`);
 });
